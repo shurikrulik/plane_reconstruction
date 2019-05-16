@@ -62,40 +62,58 @@ int main(){
     //string path_to_file = "sdc_point_cloud.txt";
     ofstream write("output.txt");
     read_file(path_to_file, p, number_of_points, points_cloud);
-    cout<<p<<'\n'<<number_of_points<<'\n';
+    //cout<<p<<'\n'<<number_of_points<<'\n';
     cout << std::fixed; 
-    cout << std::setprecision(6);
+    cout << std::setprecision(2);
     double perpendicular_length = 0;
-    for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
-        cout<<-0.099504*points_cloud[i]+0.000000*points_cloud[i+1]+0.995037*points_cloud[i+2]+(-0.995037)<<endl;
-        perpendicular_length = length_of_perpendicular_to_plane(-0.099504, 0.000000, 0.995037,-0.995037, points_cloud[i], points_cloud[i+1], points_cloud[i+2]);
-        cout<<"peprpendicular length = "<<perpendicular_length<<endl;
+    vector<double> current_coefficients;
+    vector<double> most_fitted_coefficients;
+    double current_fitment_score = 0;
+    double most_fitment_score = 0;
+    for(vector<double>::size_type i = 0; i <= points_cloud.size()-9; i++) {
+       current_coefficients = plane_equation_coefficients_by_3points(   points_cloud[i],points_cloud[i+1],points_cloud[i+2],
+                                                                points_cloud[i+3],points_cloud[i+4],points_cloud[i+5],
+                                                                points_cloud[i+6],points_cloud[i+7],points_cloud[i+8]);
+        //cout<<current_coefficients[0]<<" "<<current_coefficients[1]<<" "<<current_coefficients[2]<<" "<<current_coefficients[3];
+        current_fitment_score = 0;
+         for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
+             if(sqrt(pow(points_cloud[i]*current_coefficients[0]+points_cloud[i+1]*current_coefficients[1]+points_cloud[i+2]*current_coefficients[2]+current_coefficients[3],2))<=p){
+                current_fitment_score++;
+             }
+         }
+         current_fitment_score/=number_of_points;
+         //cout<<" "<<current_fitment_score*100<<"%"<<endl;
+         if(current_fitment_score > most_fitment_score && current_fitment_score < 1){
+             most_fitted_coefficients = current_coefficients;
+             most_fitment_score = current_fitment_score;
+         }
     }
-    int format_output=0;
-    for(double n : points_cloud) {
+    cout<<"Most fitment score: "<<most_fitment_score*100<<"%"<<" Most fitted coefficients: "<<most_fitted_coefficients[0]<<" "<<most_fitted_coefficients[1]<<" "<<most_fitted_coefficients[2]<<" "<<most_fitted_coefficients[3]<<endl;
+   // int format_output=0;
+   /* for(double n : points_cloud) {
         cout<<n<<" ";
         format_output++;
        if(format_output % 3 == 0){
             cout<<'\n';
        }
-    }
-    cout << std::fixed; 
+    }*/
+   /* cout << std::fixed; 
     cout << std::setprecision(6);
     perpendicular_length = length_of_perpendicular_to_plane(0.000000, 0.000000, 1.000000,-0.995037, 20,0,3);
-    cout<<"perpendicular length = "<<perpendicular_length<<endl;
-    if(belonging_of_point_to_plane(-0.099504, 0.000000, 0.995037,0.000000,10,10,0.1,0.01))
+    cout<<"perpendicular length = "<<perpendicular_length<<endl;*/
+    /*if(belonging_of_point_to_plane(-0.099504, 0.000000, 0.995037,0.000000,10,10,0.1,0.01))
         cout<<"Belongs !"<<endl;
     else
-        cout<<"Doesn't belongs ("<<endl;
+        cout<<"Doesn't belongs ("<<endl;*/
 /*15,-10,0.15,10,10,0.1,20,-10,0.2*/
-    vector<double> coefficients = plane_equation_coefficients_by_3points(20, 0,	3,10, -10, 2, 10, 10, 2);
+   /* vector<double> coefficients = plane_equation_coefficients_by_3points(20, 0,	3,10, -10, 2, 10, 10, 2);
     for(double n : coefficients) {
         cout<<n<<" ";
     }
-    cout<<endl;
-    if(belonging_of_point_to_plane(coefficients[0], coefficients[1], coefficients[2],coefficients[3],20, 0, 0,0.01))
+    cout<<endl;*/
+    /*if(belonging_of_point_to_plane(coefficients[0], coefficients[1], coefficients[2],coefficients[3],20, 0, 0,0.01))
         cout<<"Belongs !"<<endl;
     else
-        cout<<"Doesn't belongs ("<<endl;
+        cout<<"Doesn't belongs ("<<endl;*/
     return 0;
 }
