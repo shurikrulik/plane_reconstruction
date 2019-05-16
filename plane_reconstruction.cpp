@@ -58,16 +58,16 @@ int main(){
     int number_of_points;
     double a, b, c, d, x, y, z, p;
     vector<double> points_cloud;
-    string path_to_file = "input.txt";
-    //string path_to_file = "sdc_point_cloud.txt";
+    //string path_to_file = "input.txt";
+    string path_to_file = "sdc_point_cloud.txt";
     ofstream write("output.txt");
     read_file(path_to_file, p, number_of_points, points_cloud);
     //cout<<p<<'\n'<<number_of_points<<'\n';
     cout << std::fixed; 
     cout << std::setprecision(2);
     double perpendicular_length = 0;
-    vector<double> current_coefficients;
-    vector<double> most_fitted_coefficients;
+    vector<double> current_coefficients{0,0,0,0};
+    vector<double> most_fitted_coefficients{0,0,0,0};
     double current_fitment_score = 0;
     double most_fitment_score = 0;
     for(vector<double>::size_type i = 0; i <= points_cloud.size()-9; i++) {
@@ -75,18 +75,20 @@ int main(){
                                                                 points_cloud[i+3],points_cloud[i+4],points_cloud[i+5],
                                                                 points_cloud[i+6],points_cloud[i+7],points_cloud[i+8]);
         //cout<<current_coefficients[0]<<" "<<current_coefficients[1]<<" "<<current_coefficients[2]<<" "<<current_coefficients[3];
-        current_fitment_score = 0;
-         for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
-             if(sqrt(pow(points_cloud[i]*current_coefficients[0]+points_cloud[i+1]*current_coefficients[1]+points_cloud[i+2]*current_coefficients[2]+current_coefficients[3],2))<=p){
-                current_fitment_score++;
-             }
-         }
-         current_fitment_score/=number_of_points;
-         //cout<<" "<<current_fitment_score*100<<"%"<<endl;
-         if(current_fitment_score > most_fitment_score && current_fitment_score < 1){
-             most_fitted_coefficients = current_coefficients;
-             most_fitment_score = current_fitment_score;
-         }
+        if(fabs(current_coefficients[0]) + fabs(current_coefficients[1]) + fabs(current_coefficients[2]) + fabs(current_coefficients[3]) != 0 ){
+            current_fitment_score = 0;
+            for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
+                if(fabs(points_cloud[i]*current_coefficients[0]+points_cloud[i+1]*current_coefficients[1]+points_cloud[i+2]*current_coefficients[2]+current_coefficients[3])<=p){
+                    current_fitment_score++;
+                }
+            }
+            current_fitment_score/=number_of_points;
+            //cout<<" "<<current_fitment_score*100<<"%"<<endl;
+            if(current_fitment_score > most_fitment_score) {
+                most_fitted_coefficients = current_coefficients;
+                most_fitment_score = current_fitment_score;
+            }
+        }
     }
     cout<<"Most fitment score: "<<most_fitment_score*100<<"%"<<" Most fitted coefficients: "<<most_fitted_coefficients[0]<<" "<<most_fitted_coefficients[1]<<" "<<most_fitted_coefficients[2]<<" "<<most_fitted_coefficients[3]<<endl;
    // int format_output=0;
