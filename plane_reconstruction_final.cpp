@@ -11,21 +11,6 @@ bool belonging_of_point_to_plane(double a, double b, double c, double d, double 
     return fabs(a*x+b*y+c*z+d) <= p;
 }
 
-double length_of_perpendicular_to_plane(double a, double b, double c, double d, double x1, double y1, double z1) 
-{ 
-    double k = (-a * x1 - b * y1 - c * z1 - d) / (double)(a * a + b * b + c * c); 
-    double x2 = a * k + x1; 
-    double y2 = b * k + y1; 
-    double z2 = c * k + z1; 
-
-    double ax = x2 - x1;
-    double ay = y2 - y1;
-    double az = z2 - z1;
-    double vector_length = sqrt(pow(ax,2) + pow(ay,2) + pow(az,2));
-  
-    return vector_length;
-} 
-
 vector<double> plane_equation_coefficients_by_3points(double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3){
     double a1 = x2 - x1;
     double b1 = y2 - y1;
@@ -59,7 +44,6 @@ int main(){
     double a, b, c, d, x, y, z, p;
     vector<double> points_cloud;
     string path_to_file = "input.txt";
-    //string path_to_file = "sdc_point_cloud.txt";
     ofstream write("output.txt");
     read_file(path_to_file, p, number_of_points, points_cloud);
     cout << std::fixed; 
@@ -74,7 +58,6 @@ int main(){
         current_coefficients = plane_equation_coefficients_by_3points(   points_cloud[i],points_cloud[i+1],points_cloud[i+2],
                                                                     points_cloud[i+3],points_cloud[i+4],points_cloud[i+5],
                                                                     points_cloud[i+6],points_cloud[i+7],points_cloud[i+8]);
-            //cout<<current_coefficients[0]<<" "<<current_coefficients[1]<<" "<<current_coefficients[2]<<" "<<current_coefficients[3];
             if(fabs(current_coefficients[0]) + fabs(current_coefficients[1]) + fabs(current_coefficients[2]) + fabs(current_coefficients[3]) != 0 ){
                 current_fitment_score = 0;
                 for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
@@ -83,7 +66,6 @@ int main(){
                     }
                 }
                 current_fitment_score/=number_of_points;
-                //cout<<" "<<current_fitment_score*100<<"%"<<endl;
                 if(current_fitment_score > most_fitment_score) {
                     most_fitted_coefficients = current_coefficients;
                     most_fitment_score = current_fitment_score;
@@ -97,7 +79,6 @@ int main(){
         current_coefficients = plane_equation_coefficients_by_3points(   points_cloud[i],points_cloud[i+1],points_cloud[i+2],
                                                                     points_cloud[i+3],points_cloud[i+4],points_cloud[i+5],
                                                                     points_cloud[i+6],points_cloud[i+7],points_cloud[i+8]);
-            //cout<<current_coefficients[0]<<" "<<current_coefficients[1]<<" "<<current_coefficients[2]<<" "<<current_coefficients[3];
             if(fabs(current_coefficients[0]) + fabs(current_coefficients[1]) + fabs(current_coefficients[2]) + fabs(current_coefficients[3]) != 0 ){
                 current_fitment_score = 0;
                 for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
@@ -106,7 +87,6 @@ int main(){
                     }
                 }
                 current_fitment_score/=number_of_points;
-                //cout<<" "<<current_fitment_score*100<<"%"<<endl;
                 if(current_fitment_score > most_fitment_score) {
                     most_fitted_coefficients = current_coefficients;
                     most_fitment_score = current_fitment_score;
@@ -115,17 +95,7 @@ int main(){
         }
 
     }
-    cout<<"Most fitment score: "<<most_fitment_score*100<<"%"<<" Most fitted coefficients: "<<most_fitted_coefficients[0]<<" "<<most_fitted_coefficients[1]<<" "<<most_fitted_coefficients[2]<<" "<<most_fitted_coefficients[3]<<endl;
     write<<most_fitted_coefficients[0]<<" "<<most_fitted_coefficients[1]<<" "<<most_fitted_coefficients[2]<<" "<<most_fitted_coefficients[3];
-   int number_of_belonging_points = 0;
-   for(vector<double>::size_type i = 0; i <= points_cloud.size()-3; i+=3) {
-
-       if(belonging_of_point_to_plane(  most_fitted_coefficients[0],most_fitted_coefficients[1], most_fitted_coefficients[2],most_fitted_coefficients[3],
-                                        points_cloud[i], points_cloud[i+1],points_cloud[i+2],p))
-            number_of_belonging_points++;
-   }
-   cout<<"Number of belonging points: "<<number_of_belonging_points<<endl;
-   cout<<"Total number of points: "<<number_of_points<<endl;
 
     return 0;
 }
